@@ -156,29 +156,22 @@ async function performScraping() {
                     console.error('Error parsing CSV:', err);
                     return;
                 }
-
-                // Setup Express routes
-                app.get('/data', (req, res) => {
-                    res.json(records);
-                });
-
-                // Start server
-                app.listen(port, () => {
-                    console.log(`Server running at http://localhost:${port}/data`);
-                });
+                
+                // Instead of starting a server, store the data
+                cachedData = records;
             });
         }
 
-        // Add near the end of the try block
-                await browser.close();
-                
-            } catch (error) {
-                console.error('Scraping error:', error);
-                if (browser) await browser.close();
-            } finally {
-                if (browser) await browser.close();
-            }
+    } catch (error) {
+        console.error('Scraping error:', error);
+        if (browser) await browser.close();
+    } finally {
+        if (browser) await browser.close();
+    }
 }
+
+// Export the scraping function
+module.exports = performScraping;
 
 // Schedule the scraping to run daily at 1:00 AM
 schedule.scheduleJob('0 1 * * *', async () => {
