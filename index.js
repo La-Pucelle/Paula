@@ -1,5 +1,6 @@
 require('dotenv').config();
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const XLSX = require('xlsx');
 const fs = require('fs');
 const csv = require('csv-parse');
@@ -18,10 +19,11 @@ const PAGE_DASHBOARD = 'https://zeroq.cl/stats/#/dashboard/3353?_k=ffjy4v'
 async function performScraping() {
     try {
         const browser = await puppeteer.launch({
-            headless: false,
-            defaultViewport: null,
-            args: ['--start-maximized'],
-            executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe'
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+            ignoreHTTPSErrors: true,
         });
         const page = await browser.newPage();
 
@@ -169,10 +171,13 @@ async function performScraping() {
             });
         }
 
-        // await browser.close();
-    } catch (error) {
-        console.error('Scraping error:', error);
-    }
+        // Add near the end of the try block
+                await browser.close();
+                
+            } catch (error) {
+                console.error('Scraping error:', error);
+                if (browser) await browser.close();
+            }
 }
 
 // Schedule the scraping to run daily at 1:00 AM
