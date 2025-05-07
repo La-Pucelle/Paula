@@ -1,10 +1,5 @@
 require('dotenv').config();
 const puppeteer = require('puppeteer');
-const chromium = require('@sparticuz/chromium');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const csv = require('csv-parse');
-const path = require('path');
 const express = require('express');
 const app = express();
 const port = 3000;
