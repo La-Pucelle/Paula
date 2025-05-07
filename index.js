@@ -1,5 +1,6 @@
 require('dotenv').config();
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromium = require('@sparticuz/chromium');
 const express = require('express');
 const app = express();
 const port = 3000;
@@ -12,11 +13,16 @@ const PAGE_LOGIN = 'https://zeroq.cl/signin'
 const PAGE_DASHBOARD = 'https://zeroq.cl/stats/#/dashboard/3353?_k=ffjy4v'
 
 async function performScraping() {
+    let browser;
     try {
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
+        browser = await puppeteer.launch({
+            args: chromium.args,
+            defaultViewport: chromium.defaultViewport,
+            executablePath: await chromium.executablePath(),
+            headless: chromium.headless,
+            ignoreHTTPSErrors: true,
         });
+        
         const page = await browser.newPage();
 
         await page.goto(PAGE_LOGIN);
@@ -168,6 +174,8 @@ async function performScraping() {
                 
             } catch (error) {
                 console.error('Scraping error:', error);
+                if (browser) await browser.close();
+            } finally {
                 if (browser) await browser.close();
             }
 }
