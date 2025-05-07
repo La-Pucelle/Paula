@@ -1,5 +1,5 @@
 require('dotenv').config();
-const puppeteer = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 const chromium = require('@sparticuz/chromium');
 const XLSX = require('xlsx');
 const fs = require('fs');
@@ -19,11 +19,8 @@ const PAGE_DASHBOARD = 'https://zeroq.cl/stats/#/dashboard/3353?_k=ffjy4v'
 async function performScraping() {
     try {
         const browser = await puppeteer.launch({
-            args: chromium.args,
-            defaultViewport: chromium.defaultViewport,
-            executablePath: await chromium.executablePath(),
-            headless: chromium.headless,
-            ignoreHTTPSErrors: true,
+            headless: true,
+            args: ['--no-sandbox', '--disable-setuid-sandbox']
         });
         const page = await browser.newPage();
 
